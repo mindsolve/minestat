@@ -53,19 +53,40 @@ namespace MineStatLib
     /// </summary>
     /// <param name="address">Address (hostname or IP) of Minecraft server to connect to</param>
     /// <param name="port">Port to connect to on the address</param>
-    /// <param name="timeout">Timeout in seconds</param>
-    public MineStat(string address, ushort port, int timeout = DefaultTimeout)
+    /// <param name="timeout">(Optional) Timeout in seconds</param>
+    /// <param name="protocol">(Optional) SLP protocol to use, defaults to automatic detection</param>
+    public MineStat(string address, ushort port, int timeout = DefaultTimeout, SlpProtocol protocol = SlpProtocol.Automatic)
     {
       Address = address;
       Port = port;
       Timeout = timeout;
       
-      /*
-       * 1. Try JSON protocol
-       * 2. Try extended legacy protocol
-       * 3. Try legacy protocol
-       * 4. Try beta protocol
-       */
+      // If the user manually selected a protocol, use that
+      switch (protocol)
+      {
+        case SlpProtocol.Beta:
+          QueryWithBetaProtocol();
+          break;
+        case SlpProtocol.Legacy:
+          QueryWithLegacyProtocol();
+          break;
+        case SlpProtocol.ExtendedLegacy:
+          QueryWithExtendedLegacyProtocol();
+          break;
+        case SlpProtocol.Json:
+          QueryWithJsonProtocol();
+          break;
+        case SlpProtocol.Automatic:
+          break;
+        default:
+          throw new ArgumentOutOfRangeException(nameof(protocol), "Invalid SLP protocol specified for parameter 'protocol'");
+      }
+      
+      // If a protocol was chosen manually, return
+      if (protocol != SlpProtocol.Automatic)
+      {
+        return;
+      }
       
       // The order of protocols here is (sadly) important.
       // Some server versions (1.3, 1.4) seem to have trouble with newer protocols and stop responding for a few seconds.
@@ -582,7 +603,12 @@ namespace MineStatLib
     /// It contains very few details, no server version info, only MOTD, max- and online player counts.<br/>
     /// <i>Available since Minecraft Beta 1.8</i>
     /// </summary>
-    Beta
+    Beta,
+    
+    /// <summary>
+    /// Not a protocol. Used for setting the default, automatic protocol detection.
+    /// </summary>
+    Automatic
   }
   
 }
