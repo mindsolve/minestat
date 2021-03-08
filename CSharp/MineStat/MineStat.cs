@@ -65,16 +65,16 @@ namespace MineStatLib
       switch (protocol)
       {
         case SlpProtocol.Beta:
-          QueryWithBetaProtocol();
+          RequestWithBetaProtocol();
           break;
         case SlpProtocol.Legacy:
-          QueryWithLegacyProtocol();
+          RequestWithLegacyProtocol();
           break;
         case SlpProtocol.ExtendedLegacy:
-          QueryWithExtendedLegacyProtocol();
+          RequestWithExtendedLegacyProtocol();
           break;
         case SlpProtocol.Json:
-          QueryWithJsonProtocol();
+          RequestWithJsonProtocol();
           break;
         case SlpProtocol.Automatic:
           break;
@@ -101,17 +101,17 @@ namespace MineStatLib
        * 4.: JSON (1.7+)
        */
       
-      var result = QueryWithLegacyProtocol();
+      var result = RequestWithLegacyProtocol();
       
       if (result != ConnStatus.Connfail && result != ConnStatus.Success)
       {
-        result = QueryWithBetaProtocol();
+        result = RequestWithBetaProtocol();
         
         if (result != ConnStatus.Connfail)
-          result = QueryWithExtendedLegacyProtocol();
+          result = RequestWithExtendedLegacyProtocol();
 
         if (result != ConnStatus.Connfail)
-          QueryWithJsonProtocol();
+          RequestWithJsonProtocol();
       }
       
     }
@@ -122,7 +122,7 @@ namespace MineStatLib
     /// See https://wiki.vg/Server_List_Ping#Current
     /// </summary>
     /// <returns>ConnStatus</returns>
-    public ConnStatus QueryWithJsonProtocol()
+    public ConnStatus RequestWithJsonProtocol()
     {
       // TODO: Implement
       return ParseJsonProtocolPayload(null);
@@ -135,13 +135,13 @@ namespace MineStatLib
     }
 
     /// <summary>
-    /// Minecraft 1.6 SLP query, extended legacy ping protocol.
+    /// Minecraft 1.6 SLP protocol, nicknamed "extended legacy" ping protocol.
     /// All modern servers are currently backwards compatible with this protocol.<br/>
     /// 
     /// See https://wiki.vg/Server_List_Ping#1.6
     /// </summary>
     /// <returns></returns>
-    public ConnStatus QueryWithExtendedLegacyProtocol()
+    public ConnStatus RequestWithExtendedLegacyProtocol()
     {
 
       var tcpclient = new TcpClient {ReceiveTimeout = Timeout * 1000};
@@ -240,14 +240,14 @@ namespace MineStatLib
     }
 
     /// <summary>
-    /// Minecraft 1.4-1.5 SLP query, server response contains more info than beta SLP.
+    /// Minecraft 1.4-1.5 SLP protocol version, server response contains more info than beta SLP.
     /// Quite simple to request, but contains all interesting information.
     /// Still works with modern server implementations.<br/>
     /// 
     /// See https://wiki.vg/Server_List_Ping#1.4_to_1.5
     /// </summary>
     /// <returns>ConnStatus</returns>
-    public ConnStatus QueryWithLegacyProtocol()
+    public ConnStatus RequestWithLegacyProtocol()
     {
       var tcpclient = new TcpClient {ReceiveTimeout = Timeout * 1000};
 
@@ -351,7 +351,7 @@ namespace MineStatLib
       return ConnStatus.Success;
     }
 
-    public ConnStatus QueryWithBetaProtocol()
+    public ConnStatus RequestWithBetaProtocol()
     {
       var tcpclient = new TcpClient {ReceiveTimeout = Timeout * 1000};
 
@@ -579,7 +579,7 @@ namespace MineStatLib
   {
     /// <summary>
     /// The newest and currently supported SLP protocol.<br/>
-    /// Uses (wrapped) JSON as payload. Complex query, see above <see cref="MineStat.QueryWithJsonProtocol"/>
+    /// Uses (wrapped) JSON as payload. Complex request, see above <see cref="MineStat.RequestWithJsonProtocol"/>
     /// for the protocol implementation. <br/>
     /// <i>Available since Minecraft 1.7.</i>
     /// </summary>
@@ -588,7 +588,7 @@ namespace MineStatLib
     /// <summary>
     /// The previous SLP protocol.<br/>
     /// Used by Minecraft 1.6, it is still supported by all newer server versions.
-    /// Complex query needed, see implementation <see cref="MineStat.QueryWithExtendedLegacyProtocol"/> for all protocol
+    /// Complex request needed, see implementation <see cref="MineStat.RequestWithExtendedLegacyProtocol"/> for all protocol
     /// details.<br/>
     /// <i>Available since Minecraft 1.6</i>
     /// </summary>
@@ -598,7 +598,7 @@ namespace MineStatLib
     /// The legacy SLP protocol.<br/>
     /// Used by Minecraft 1.4 and 1.5, it is the first protocol to contain the server version number.
     /// Very simple protocol call (2 byte), simple response decoding.
-    /// See <see cref="MineStat.QueryWithLegacyProtocol"/> for full implementation and protocol details.<br/>
+    /// See <see cref="MineStat.RequestWithLegacyProtocol"/> for full implementation and protocol details.<br/>
     /// <i>Available since Minecraft 1.4</i>
     /// </summary>
     Legacy,
