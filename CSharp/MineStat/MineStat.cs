@@ -116,6 +116,12 @@ namespace MineStatLib
       
     }
 
+    /// <summary>
+    /// Minecraft 1.7+ SLP protocol. In use by all modern Minecraft clients.
+    /// Complicated to construct.<br/>
+    /// See https://wiki.vg/Server_List_Ping#Current
+    /// </summary>
+    /// <returns>ConnStatus</returns>
     public ConnStatus QueryWithJsonProtocol()
     {
       // TODO: Implement
