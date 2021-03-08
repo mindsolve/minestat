@@ -68,23 +68,29 @@ namespace MineStatLib
        */
       
       // The order of protocols here is (sadly) important.
-      // Some server versions (1.4) seem to have trouble with newer protocols and stop responding for a few seconds.
+      // Some server versions (1.3, 1.4) seem to have trouble with newer protocols and stop responding for a few seconds.
       // If, for example, the ext.-legacy protocol triggers this problem, the following connections are dropped/reset
       // even if they would have worked individually/normally.
-      // This arrangement is quite safe, first try the best protocol (json), then the most supported protocol (beta)
-      // then the "better" protocols legacy and extended legacy.
+      // For more information, see https://github.com/FragLand/minestat/issues/70
 
-      var result = QueryWithJsonProtocol();
+      /*
+       * 1.: Legacy (1.4, 1.5)
+       * 2.: Beta (b1.8-rel1.3)
+       * 3.: Extended Legacy (1.6)
+       * 4.: JSON (1.7+)
+       */
+      
+      var result = QueryWithLegacyProtocol();
       
       if (result != ConnStatus.Connfail && result != ConnStatus.Success)
       {
         result = QueryWithBetaProtocol();
         
-        if (result != ConnStatus.Connfail) 
-          result = QueryWithLegacyProtocol();
-      
         if (result != ConnStatus.Connfail)
           result = QueryWithExtendedLegacyProtocol();
+
+        if (result != ConnStatus.Connfail)
+          QueryWithJsonProtocol();
       }
       
     }
