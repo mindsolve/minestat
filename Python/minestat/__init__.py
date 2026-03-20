@@ -327,15 +327,20 @@ class MineStat:
     Function for stripping all formatting codes from a motd. Supports Json Chat components (as dict) and
     the legacy formatting codes.
 
+    Minecraft vanilla servers do not support Chat Components directly, only legacy formatting codes,
+    but they encapsule the configured text (incl. formatting codes) in a single Chat Component which is fully supported
+    by the official client.
+    Example: {"text": "\u00a79Testtext"}
+
     :param raw_motd: The raw MOTD, either as a string or dict (from "json.loads()")
     """
     stripped_motd = ""
 
     if isinstance(raw_motd, str):
-      stripped_motd = re.sub(r"§.", "", raw_motd)
+      stripped_motd = re.sub(r"§.?", "", raw_motd)
 
     elif isinstance(raw_motd, dict):
-      stripped_motd = raw_motd.get("text", "")
+      stripped_motd = MineStat.motd_strip_formatting(raw_motd.get("text", ""))
 
       if raw_motd.get("extra"):
         for sub in raw_motd["extra"]:
